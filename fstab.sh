@@ -47,6 +47,7 @@ cat /etc/fstab.org | awk '/\/ /{print}' >> /etc/fstab
 cat /etc/fstab.org | awk '/\/boot /{print}' >> /etc/fstab
 cat /etc/fstab
 exit
+EOF
 
 
 
