@@ -35,9 +35,8 @@ mount -o nouuid $boot_part /mnt/rescue-boot
 #==============================
 #see also http://linuxonazure.azurewebsites.net/linux-recovery-using-chroot-steps-to-recover-vms-that-are-not-accessible/
 
-for i in dev proc sys dev/pts
-do                                                                                                                                                                                                           mount -o bind /$i /mnt/rescue-root/$i
-done
+for i in dev proc sys dev/pts; do mount -o bind /$i /mnt/rescue-root/$i; done
+
 
 #################################
 # Fix the fstab to allow a boot #
