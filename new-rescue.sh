@@ -131,9 +131,15 @@ version=$(echo $vm_details | jq ".storageProfile.imageReference.version")
 urn=$(echo "${publisher//\"}:${offer//\"}:${sku//\"}:${version//\"}")
 echo $urn
 #echo $managed
+
+#DEBUG
+#echo "os_disk: $os_disk"
+#echo "managed: $managed"
+
 disk_uri="null"
 resource_group=$g
-if [[ -z $managed ]]
+
+if [[ $managed -eq "null" ]]    
 then
     disk_uri=$(echo $os_disk | jq ".vhd.uri")
     disk_uri=$(echo "${disk_uri//\"}")
@@ -144,8 +150,15 @@ then
     #az storage blob copy start --destination-blob $target_disk_name --destination-container vhds --account-name $storage_account --source-uri $disk_uri
     az storage blob copy start --destination-blob $target_disk_name.vhd --destination-container vhds --account-name $storage_account --source-uri $disk_uri
 
+    echo "rn: $rn"
+    echo "g: $g"
+    echo "name: $target_disk_name"
+    echo "image: $urn"
+    echo "#####"
+    echo "target-disk: $target_disk_name"
+    echo "storage: $storage_account"
     az vm create --use-unmanaged-disk --name $rn -g $g --location $location --admin-username $user --admin-password $password --image $urn --storage-sku Standard_LRS
-    az vm unmanaged-disk attach --vm-name $rn -g $g --name $target_disk_name  --vhd-uri "https://$storage_account.blob.core.windows.net/vhds/$target_disk_name.vhd"
+    az vm unmanaged-disk attach --vm-name $rn -g $g --name origin-os-disk  --vhd-uri "https://$storage_account.blob.core.windows.net/vhds/$target_disk_name.vhd"
 
 else
     disk_uri=$(echo $os_disk | jq ".managedDisk.id")
