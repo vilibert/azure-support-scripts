@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Discover the stucture of the os-data-disk
-==========================================
+#==========================================
 
 #get boot flaged partition
 #-------------------------
