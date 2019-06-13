@@ -45,9 +45,8 @@ then
 az storage blob lease break -c vhds --account-name $storage_account -b $original_disk_name.vhd 2>&1 > recover.log
 az storage blob copy start  -c vhds -b $original_disk_name.vhd --source-container vhds --source-blob $target_disk_name.vhd --account-name $storage_account 2>&1 > recover.log
 else
-    /bin/true
-#swap=$(az vm update -g $g -n $vm --os-disk $(echo "${disk_uri//\"}") | jq ".storageProfile.osDisk.name")
-#swap=$(az vm update -g $g -n $vm --os-disk $disk_uri)
+# target_disk_name is set in the file new-rescue.sh
+az vm update -g $g -n $vm --os-disk $target_disk_name
 fi
 
 echo "Successfully swapped the OS disk. Now starting the Problematic VM with OS disk $swap"

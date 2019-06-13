@@ -154,15 +154,23 @@ then
 else
     disk_uri=$(echo $os_disk | jq ".managedDisk.id")
     disk_uri=$(echo "${disk_uri//\"}")
-    echo "##### Generatnig Snapshot #######"
-    source_disk_name=`echo $disk_uri | awk -F"/" '{print $NF}'`
-    snapshot_name="`echo $disk_uri | awk -F"/" '{print $NF}' | sed 's/_/-/g'`-`date +%d-%m-%Y-%T | sed 's/:/-/g'`"
-    target_disk_name="`echo $disk_uri | awk -F"/" '{print $NF}'`-copy-`date +%d-%m-%Y-%T | sed 's/:/-/g'`"
-    az snapshot create -g $resource_group -n $snapshot_name --source $source_disk_name -l $location
+    #see http://mywiki.wooledge.org/BashFAQ/073 for further information about the next lines
+    original_disk_name=${disk_uri##*/}
+    original_disk_name=${original_disk_name%.*}  
+    target_disk_name=$original_disk_name-copy
 
-    echo "##### Creating Disk from Snapshot #######"
 
-    snapshotId=$(az snapshot show --name $snapshot_name --resource-group $resource_group --query [id] -o tsv)
+
+
+
+    echo "Create a snapshot of the origine-os-disk: $original_disk_name"
+#    source_disk_name=`echo $disk_uri | awk -F"/" '{print $NF}'`
+ #   target_disk_name="`echo $disk_uri | awk -F"/" '{print $NF}'`-copy-`date +%d-%m-%Y-%T | sed 's/:/-/g'`"
+    az snapshot create -g $resource_group -n $original_disk_name-snap --source $original_disk_name -l $location
+
+    echo "Create a disk from the snapshot"
+
+    snapshotId=$(az snapshot show --name $original_disk_name-snap --resource-group $resource_group --query [id] -o tsv)
     az disk create --resource-group $resource_group --name $target_disk_name -l $location --sku Standard_LRS --source $snapshotId
 
     az vm create --name $rn -g $g --location $location --admin-username $user --admin-password $password --image $urn --storage-sku Standard_LRS
