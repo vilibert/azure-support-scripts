@@ -69,4 +69,6 @@ umount /mnt/rescue-root
 
 
 
-
+######
+run the custom script file
+az vm extension set   --resource-group recover_rg   --vm-name rescue1 --name customScript   --publisher Microsoft.Azure.Extensions   --settings ./script.json

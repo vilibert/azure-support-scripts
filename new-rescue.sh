@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Module : new-rescue.sh
-# Author : Sriharsha B S (sribs@microsoft.com, Azure Linux Escalation Team),  Dinesh Kumar Baskar (dibaskar@microsoft.com, Azure Linux Escalation Team)
+# Author : Marcus Lachmanez (malachma@microsoft.com, Azure Linux Escalation Team), Sriharsha B S (sribs@microsoft.com, Azure Linux Escalation Team),  Dinesh Kumar Baskar (dibaskar@microsoft.com, Azure Linux Escalation Team)
 # Date : 13th August 2018
 # Description : BASH form of New-AzureRMRescueVM powershell command.
 
@@ -91,12 +91,6 @@ case $key in
 esac
 done
 
-echo $rn
-echo $subscription
-echo $g
-echo $vm
-
-
 # Check whether user has an azure account
 acc=$(az account show)
 echo $acc
@@ -119,8 +113,9 @@ vm_details=$(az vm show -g $g -n $vm)
 location=$(echo $vm_details | jq '.location' | tr -d '"')
 
 echo "Stopping and deallocating the Problematic Original VM"
-az vm deallocate -g $g -n $vm
- 
+az vm deallocate -g $g -n $vm 2>&1 > /dev/null
+echo "VM is stopped" 
+
 os_disk=$(echo $vm_details| jq ".storageProfile.osDisk")
 managed=$(echo $os_disk | jq ".managedDisk")
 offer=$(echo $vm_details | jq ".storageProfile.imageReference.offer")
@@ -129,13 +124,6 @@ sku=$(echo $vm_details | jq ".storageProfile.imageReference.sku")
 version=$(echo $vm_details | jq ".storageProfile.imageReference.version")
 
 urn=$(echo "${publisher//\"}:${offer//\"}:${sku//\"}:${version//\"}")
-echo $urn
-#echo $managed
-
-#DEBUG
-#echo "os_disk: $os_disk"
-#echo "managed: $managed"
-
 disk_uri="null"
 resource_group=$g
 
@@ -143,22 +131,25 @@ if [[ $managed -eq "null" ]]
 then
     disk_uri=$(echo $os_disk | jq ".vhd.uri")
     disk_uri=$(echo "${disk_uri//\"}")
-    target_disk_name="`echo $disk_uri | awk -F "/" '{print $NF}' | awk -F".vhd" '{print $1}'`-`date +%d-%m-%Y-%T |sed 's/:/-/g'`"
-    #target_disk_name="`echo $disk_uri | awk -F "/" '{print $NF}' | awk -F".vhd" '{print $1}'`-`date +%d-%m-%Y-%T`"
-    storage_account=`echo $disk_uri | awk -F "https://" '{print $2}' | awk -F ".blob" '{print $1}'`
-    #key=`az storage account keys list -g $resource_group -n $storage_account --output table |  awk '{if($1=="key1")print $3}' | tr -d '[:blank:]'`
-    #az storage blob copy start --destination-blob $target_disk_name --destination-container vhds --account-name $storage_account --source-uri $disk_uri
-    az storage blob copy start --destination-blob $target_disk_name.vhd --destination-container vhds --account-name $storage_account --source-uri $disk_uri
 
-    echo "rn: $rn"
-    echo "g: $g"
-    echo "name: $target_disk_name"
-    echo "image: $urn"
-    echo "#####"
-    echo "target-disk: $target_disk_name"
-    echo "storage: $storage_account"
-    az vm create --use-unmanaged-disk --name $rn -g $g --location $location --admin-username $user --admin-password $password --image $urn --storage-sku Standard_LRS
-    az vm unmanaged-disk attach --vm-name $rn -g $g --name origin-os-disk  --vhd-uri "https://$storage_account.blob.core.windows.net/vhds/$target_disk_name.vhd"
+    #see http://mywiki.wooledge.org/BashFAQ/073 for further information about the next lines
+    original_disk_name=${disk_uri##*/}
+    original_disk_name=${original_disk_name%.*}  
+    target_disk_name=$original_disk_name-copy
+
+    storage_account=${disk_uri%%.*} 
+    storage_account=${storage_account#*//}
+
+    echo "creating a copy of the OS disk"
+    az storage blob copy start --destination-blob $target_disk_name.vhd --destination-container vhds --account-name $storage_account --source-uri $disk_uri 2>&1 > recover.log
+
+
+    echo "Creating the rescue VM $rn"
+    az vm create --use-unmanaged-disk --name $rn -g $g --location $location --admin-username $user --admin-password $password --image $urn --storage-sku Standard_LRS 2>&1 > recover.log 
+    echo "New VM is created"
+
+    echo "Attach the OS-Disk copy to the rescue VM:$rn"
+    az vm unmanaged-disk attach --vm-name $rn -g $g --name origin-os-disk  --vhd-uri "https://$storage_account.blob.core.windows.net/vhds/$target_disk_name.vhd" 2>&1 > recover.log
 
 else
     disk_uri=$(echo $os_disk | jq ".managedDisk.id")
@@ -178,5 +169,10 @@ else
     az vm disk attach -g $g --vm-name $rn --disk  $target_disk_name
 fi
  
+#
+# Execute a specific task
+#
+echo "Fixing the issue on the OS-Disk copy"
+az vm extension set --resource-group $g   --vm-name $rn --name customScript   --publisher Microsoft.Azure.Extensions   --settings ./script.json 2>&1 > recover.log
 
-
+source my-restore-original.sh

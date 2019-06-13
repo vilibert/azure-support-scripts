@@ -126,11 +126,18 @@ else
     disk_uri=$(echo $datadisks | jq ".[].managedDisk.id" | grep -i $osdisk)
 fi
 
+echo $disk_uri
+
 if [[ -z disk_uri ]]
 then
     echo "The rescue VM does not contain the Problematic OS disk"
     exit;
 fi
+
+
+## debug break here
+exit 0
+
 
 # Detach the Problematic OS disk from the Rescue VM
 echo "Detaching the OS disk from the rescue VM"
