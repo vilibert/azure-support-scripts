@@ -1,3 +1,0 @@
-#!/bin/bash
-
-source wget -O - https://raw.githubusercontent.com/malachma/azure-support-scripts/master/fstab.sh
