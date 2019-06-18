@@ -1,7 +1,4 @@
 #!/bin/bash
-# What is the Distro type?
-#distro_name=$(cat /etc/os-release | awk "/^NAME/" | sed -e 's/NAME=//')
-#distro_name=${distro_name//\"}
 
 
 # Variables
@@ -29,6 +26,7 @@ then
 
 else
     # This is an Ubuntu/Debian based OS-Disk
+    # only one partion exists
     rescue_root=$boot_part
     UBUNTU_DISTRO="true"
 fi
@@ -42,6 +40,7 @@ fi
 mkdir /mnt/rescue-root
 if [[ $UBUNTU_DISTRO == "false" ]];
 then
+    # noouid is valid for XFS only, need to handle ext4 as well
     mount -o nouuid $rescue_root /mnt/rescue-root
 else
     mount $rescue_root /mnt/rescue-root
