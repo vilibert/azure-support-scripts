@@ -1,8 +1,8 @@
-# Azure Support Scripts
+# Azure Linux non-boot recovery
 
 A collection of scripts which allows auto-recovery of a not-botable Azure image. It should cover the following scenarious
 + fstab issues
 + missing initrd image
 + last installed kernel does not boot
 
-## Morde detailed docu is comming son
+## More detailed docu is comming soon
