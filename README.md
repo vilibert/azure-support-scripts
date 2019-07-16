@@ -37,7 +37,7 @@ Generic Red Hat
 ### Red Hat 7\.4\+ GRUB configuration
 rhel 7.4
 
-### Red Hat 7\.2 \& 7\.3 GRUB configuration
+### Red Hat 7\.2 \/ 7\.3 GRUB configuration
 rhel 7.2 / 7.3 secions
 
 ### Red Hat 6\.x GRUB configuration
