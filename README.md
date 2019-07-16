@@ -6,3 +6,5 @@ A collection of scripts which allows auto-recovery of a not-botable Azure image.
 + last installed kernel does not boot
 
 ## More detailed docu is comming soon
+
+- ### [Ubuntu 12.04]\(#ubuntu-12.04)
