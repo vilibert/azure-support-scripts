@@ -14,7 +14,7 @@ A collection of scripts which allows auto-recovery of a not-botable Azure image.
 
 ## [Red Hat GRUB configuration](#red-hat-grub-configuration)
 - ### [Red Hat 7.4+ GRUB configuration](#red-hat-74-grub-configuration)
-- ### [Red Hat 7.2 & 7.3 GRUB configuration](#red-hat-72-&-73-grub-configuration)
+- ### [Red Hat 7.2 & 7.3 GRUB configuration](#red-hat-72-73-grub-configuration)
 - ### [Red Hat 6.x GRUB configuration](#red-hat-6.x-grub-configuration)
 
 ## [SuSE](#suse)
