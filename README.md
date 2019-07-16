@@ -13,7 +13,7 @@ A collection of scripts which allows auto-recovery of a not-botable Azure image.
 - ### [Ubuntu Recovery Mode](#ubuntu-recovery-mode)
 
 ## [Red Hat GRUB configuration](#red-hat-grub-configuration)
-- ### [Red Hat 7.4+ GRUB configuration](#red-hat-7.4+-grub-configuration)
+- ### [Red Hat 7.4+ GRUB configuration](#red-hat-74-grub-configuration)
 - ### [Red Hat 7.2 & 7.3 GRUB configuration](#red-hat-7.2-&7.3-grub-configuration)
 - ### [Red Hat 6.x GRUB configuration](#red-hat-6.x-grub-configuration)
 
@@ -34,7 +34,7 @@ Recovery Mode
 ## Red Hat GRUB configuration
 Generic Red Hat
 
-### Red Hat 7.4+ GRUB configuration
+### Red Hat 7\.4\+ GRUB configuration
 rhel 7.4
 
 ### Red Hat 7.2 & 7.3 GRUB configuration
