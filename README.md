@@ -9,7 +9,7 @@ A collection of scripts which allows auto-recovery of a not-botable Azure image.
 
 
 ## [Ubuntu GRUB configuration](#ubuntu-grub-configuration)
-- ### [ubuntu 12.04](#ubuntu-12.04)
+- ### [ubuntu 12.04](#ubuntu-1204)
 - ### [Ubuntu Recovery Mode](#ubuntu-recovery-mode)
 
 ## [Red Hat GRUB configuration](#red-hat-grub-configuration)
@@ -25,7 +25,7 @@ A collection of scripts which allows auto-recovery of a not-botable Azure image.
 ### Ubuntu GRUB configuration
 Generic ubuntu
 
-### ubuntu 12.04
+### ubuntu 1204
 Configurations for 12.04
 
 ### Ubuntu Recovery Mode
